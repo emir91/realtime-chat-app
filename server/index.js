@@ -23,6 +23,13 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
     console.log(`User connected ${socket.id}`);
+
+    // Add a user to a room
+    socket.on('join_room', (data) => {
+        const { username, room } = data // data sent from client
+
+        socket.join(room) // join the user to a socket room
+    })
 })
 
 server.listen(4000, () => {
