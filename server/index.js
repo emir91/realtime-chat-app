@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
         // Save the new user to the room
         chatRoom = room;
         allUsers.push({id: socket.id, username, room});
-        chatRoomUsers = allUsers.filter(user => user.room === room);
+        const chatRoomUsers = allUsers.filter(user => user.room === room);
         socket.to(room).emit('chatroom_users', chatRoomUsers);
         socket.emit('chatroom_users', chatRoomUsers);
     });
