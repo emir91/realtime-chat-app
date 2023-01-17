@@ -1,7 +1,11 @@
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
+import { config } from 'dotenv';
 import { Server } from 'socket.io';
+
+// Load env variables
+config()
 
 const app = express();
 
