@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 
 import harperSaveMessages from './services/harper-save-message.js'
 import harperGetMessages from './services/harper-get-messages.js'
+import { leaveRoom } from './utils/leave-room.js'
 
 // Load env variables
 config()
@@ -75,6 +76,21 @@ io.on('connection', (socket) => {
             await harperSaveMessages(message, user, room, __createdtime__) // Save message in db
         })
     });
+    socket.on('leave_room', (data) => {
+        const { user, room } = data;
+        socket.leave(room)
+
+        const __createdtime__ = Date.now()
+
+        allUsers = leaveRoom(socket.id, allUsers);
+        socket.to(room).emit('chatroom_users', allUsers)
+        socket.to(room).emit('receive_message', {
+            username: CHAT_BOT,
+            message: `${user} has left the chat`,
+            __createdtime__
+        });
+        console.log(`${user} has left the chat`);
+    })
 });
 
 server.listen(4000, () => {
