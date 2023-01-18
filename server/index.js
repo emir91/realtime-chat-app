@@ -76,6 +76,7 @@ io.on('connection', (socket) => {
             await harperSaveMessages(message, user, room, __createdtime__) // Save message in db
         })
     });
+    
     socket.on('leave_room', (data) => {
         const { user, room } = data;
         socket.leave(room)
@@ -91,6 +92,19 @@ io.on('connection', (socket) => {
         });
         console.log(`${user} has left the chat`);
     })
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected from the chat');
+
+        const user = allUsers.find((user) => user.id === socket.id);
+        if(user?.username) {
+            allUsers = leaveRoom(socket.id, allUsers);
+            socket.to(chatRoom).emit('chatroom_users', allUsers);
+            socket.to(chatRoom).emit('receive_message', {
+                message: `${user.username} has disconnected from the chat`
+            });
+        }
+    });
 });
 
 server.listen(4000, () => {
