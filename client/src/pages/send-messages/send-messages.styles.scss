@@ -1,6 +1,20 @@
 .sendMessageContainer {
+    padding: 16px 20px 20px 16px;
+    height: 75%;
     form {
+        height: 15%;
         display: flex;
         flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+
+        .messageInput {
+            padding: 14px;
+            margin-right: 16px;
+            width: 60%;
+            border-radius: 6px;
+            border: 1px solid #99d9ea;
+            font-size: .9rem;
+        }
     }
 }
