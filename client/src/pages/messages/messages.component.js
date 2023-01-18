@@ -8,7 +8,6 @@ const Messages = () => {
 
     useEffect(() => {
         socket.on('receive_message', (data) => {
-            console.log(data);
             setMessagesReceived((state) => [
                 ...state,
                 {

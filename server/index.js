@@ -4,6 +4,8 @@ import cors from 'cors';
 import { config } from 'dotenv';
 import { Server } from 'socket.io';
 
+import harperSaveMessages from './services/harper-save-message.js'
+
 // Load env variables
 config()
 
@@ -38,6 +40,7 @@ io.on('connection', (socket) => {
 
         let __createdtime__ = Date.now();
 
+        // Send message to all users currently in the room, apart from the user that just joined
         socket.to(room).emit('receive_message', {
             message: `${username} has joined the chat room`,
             username: CHAT_BOT,
@@ -57,6 +60,14 @@ io.on('connection', (socket) => {
         const chatRoomUsers = allUsers.filter(user => user.room === room);
         socket.to(room).emit('chatroom_users', chatRoomUsers);
         socket.emit('chatroom_users', chatRoomUsers);
+
+        socket.on('send_message', async (data) => {
+            const { message, user, room, __createdtime__ } = data
+    
+            io.in(room).emit('receive_message', data) // Send to all users in room, including sender
+            
+            await harperSaveMessages(message, user, room, __createdtime__) // Save message in db
+        })
     });
 });
 
