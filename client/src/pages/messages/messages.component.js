@@ -1,10 +1,12 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { AppContext } from '../../contexts/context';
 import './messages.styles.scss'
 
 const Messages = () => {
     const [messagesRecieved, setMessagesReceived] = useState([])
     const { socket } = useContext(AppContext)
+
+    const messageColumnRef = useRef(null)
 
     useEffect(() => {
         socket.on('receive_message', (data) => {
@@ -21,6 +23,26 @@ const Messages = () => {
         return () => socket.off('receive_message')
     }, [socket]);
 
+    useEffect(() => {
+        socket.on('last_100_messages', (last100Messages) => {
+            let recentMessages = JSON.parse(last100Messages);
+
+            recentMessages = sortMessagesByDate(recentMessages);
+    
+            setMessagesReceived((state) => [...recentMessages, ...state])    
+        })
+
+        return () => socket.off('last_100_messages')
+    }, [socket])
+
+    useEffect(() => {
+        messageColumnRef.current.scrollTop = messageColumnRef.current.scrollHeight
+    }, [messagesRecieved])
+
+    const sortMessagesByDate = (messages) => {
+        return messages.sort((a, b) => parseInt(a.__createdtime__) - parseInt(b.__createdtime__) )
+    }
+
     const formatDateFromTimestamp = (timestamp) => {
         const date = new Date(timestamp);
 
@@ -28,7 +50,7 @@ const Messages = () => {
     }
 
     return (
-        <div className='messagesColumn'>
+        <div className='messagesColumn' ref={messageColumnRef}>
             {messagesRecieved.map((msg, i) => {
                 return (
                     <div className='message' key={i}>

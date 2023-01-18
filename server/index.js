@@ -5,6 +5,7 @@ import { config } from 'dotenv';
 import { Server } from 'socket.io';
 
 import harperSaveMessages from './services/harper-save-message.js'
+import harperGetMessages from './services/harper-get-messages.js'
 
 // Load env variables
 config()
@@ -33,10 +34,15 @@ io.on('connection', (socket) => {
     console.log(`User connected ${socket.id}`);
 
     // Add a user to a room
-    socket.on('join_room', (data) => {
+    socket.on('join_room', async (data) => {
         const { username, room } = data; // data sent from client
 
         socket.join(room) // join the user to a socket room
+
+        // Get last 100 messages sent in the chat room
+        const last100Messages = await harperGetMessages(room)
+
+        socket.emit('last_100_messages', last100Messages)
 
         let __createdtime__ = Date.now();
 
