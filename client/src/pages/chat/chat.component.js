@@ -1,7 +1,7 @@
 import React from 'react';
-import Messages from '../messages/messages.component';
-import RoomAndUsers from '../room-and-users/room-and-users.component';
-import SendMessage from '../send-messages/send-messages.component';
+import Messages from '../../components/messages/messages.component';
+import RoomAndUsers from '../../components/room-and-users/room-and-users.component';
+import SendMessage from '../../components/send-messages/send-messages.component';
 import './chat.styles.scss'
 
 const Chat = () => {
